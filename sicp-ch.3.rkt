@@ -206,3 +206,51 @@
 (generator 'generate)
 (generator 'generate)
 
+
+(say "Exercise 3.7")
+
+(define (make-alias-account balance password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+      (begin
+        (set! balance (- balance amount))
+        balance)
+      "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (alias new_password)
+    (set! password (cons password new_password)))
+  (define (find-password lst target)
+    (cond ((null? lst)
+            #f
+            (cond ((eq? (car lst) target)
+             #t
+             (find-password (cdr lst) target))))))
+  (define (dispatch pwd msg)
+    (cond ((find-password password pwd)
+      (cond ((eq? msg 'withdraw) withdraw)
+            ((eq? msg 'deposit) deposit)
+            ((eq? msg 'alias) alias)
+            (else (error "Unknown request: MAKE-ACCOUNT" msg))))
+      (else 
+        (begin
+          (say "Incorrect password")
+          nop))))
+  dispatch)
+
+(define peter-acc (make-alias-account 100 'secret-password))
+;((peter-acc 'secret-password 'withdraw) 40)
+;((peter-acc 'secret-password 'alias) 'alias_password)
+
+(define (make-joint account org_password alias_password)
+  ((account org_password 'alias) alias_password)
+  account)
+
+(define paul-acc (make-joint peter-acc 'secret-password 'alias_password))
+
+((paul-acc 'alias_password 'withdraw) 10)
+((peter-acc 'secret_password 'withdraw) 20)
+((paul-acc 'alias_password 'withdraw) 30)
+
+
