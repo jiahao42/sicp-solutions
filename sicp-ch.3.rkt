@@ -267,3 +267,24 @@
 (+ (f1 0) (f1 1))
 (+ (f2 1) (f2 0))
 
+(say "Exercise 3.9")
+
+; recursion version
+; Global Env: factorial
+; Env1: n = 6
+; Env2: n = 5
+; Env3: n = 4
+; Env4: n = 3
+; Env5: n = 2
+; Env6: n = 1
+
+; iterative version
+; Global Env: factorial, fact-iter
+; Env1: (fact-iter 1 1 6)
+; Env2: (fact-iter 6 2 5)
+; Env3: (fact-iter 30 3 4)
+; Env4: (fact-iter 120 4 3)
+; Env5: (fact-iter 360 5 2)
+; Env6: (fact-iter 720 6 1)
+
+
