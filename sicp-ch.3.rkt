@@ -253,4 +253,17 @@
 ((peter-acc 'secret_password 'withdraw) 20)
 ((paul-acc 'alias_password 'withdraw) 30)
 
+(say "Exercise 3.8")
+
+(define (ff base)
+  (define (fff val)
+    (set! base (+ base val))
+    base)
+  fff)
+
+(define f1 (ff -0.5))
+(define f2 (ff -0.5))
+ 
+(+ (f1 0) (f1 1))
+(+ (f2 1) (f2 0))
 
