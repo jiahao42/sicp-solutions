@@ -179,3 +179,30 @@
 
 
 (say "Exercise 3.6")
+
+(define (pseudo-random)
+  (let ((seed 42))
+    (define (set-seed val)
+      (set! seed val)
+      seed
+      )
+    (define (next)
+      (let ((val (modulo (+ (* 12345 seed) 67890) 2147483647)))
+        (set! seed val)
+        val
+      ))
+    (define (dispatch cmd)
+      (cond ((eq? cmd 'generate)
+             (next))
+            ((eq? cmd 'reset)
+             set-seed)
+            (else (error "Wrong command"))))
+    dispatch))
+
+(define generator (pseudo-random))
+(generator 'generate)
+(generator 'generate)
+((generator 'reset) 42)
+(generator 'generate)
+(generator 'generate)
+
