@@ -210,34 +210,34 @@
 (say "Exercise 3.7")
 
 (define (make-alias-account balance password)
-  (define (withdraw amount)
-    (if (>= balance amount)
-      (begin
-        (set! balance (- balance amount))
-        balance)
-      "Insufficient funds"))
-  (define (deposit amount)
-    (set! balance (+ balance amount))
-    balance)
-  (define (alias new_password)
-    (set! password (cons password new_password)))
-  (define (find-password lst target)
-    (cond ((null? lst)
-            #f
-            (cond ((eq? (car lst) target)
-             #t
-             (find-password (cdr lst) target))))))
-  (define (dispatch pwd msg)
-    (cond ((find-password password pwd)
-      (cond ((eq? msg 'withdraw) withdraw)
-            ((eq? msg 'deposit) deposit)
-            ((eq? msg 'alias) alias)
-            (else (error "Unknown request: MAKE-ACCOUNT" msg))))
-      (else 
+  (let ((passwords (cons password '())))
+    (define (withdraw amount)
+      (if (>= balance amount)
         (begin
-          (say "Incorrect password")
-          nop))))
-  dispatch)
+          (set! balance (- balance amount))
+          balance)
+        "Insufficient funds"))
+    (define (deposit amount)
+      (set! balance (+ balance amount))
+      balance)
+    (define (alias new_password)
+      (set! passwords (cons password new_password)))
+    (define (password-exist? lst target)
+      (cond ((not (pair? lst)) (eq? lst target))
+            (else
+              (cond ((eq? (car lst) target) #t)
+               (else (password-exist? (cdr lst) target))))))
+    (define (dispatch given_password msg)
+      (cond ((password-exist? passwords given_password)
+        (cond ((eq? msg 'withdraw) withdraw)
+              ((eq? msg 'deposit) deposit)
+              ((eq? msg 'alias) alias)
+              (else (error "Unknown request: MAKE-ACCOUNT" msg))))
+        (else 
+          (begin
+            (say "Incorrect password")
+            nop))))
+  dispatch))
 
 (define peter-acc (make-alias-account 100 'secret-password))
 ;((peter-acc 'secret-password 'withdraw) 40)
@@ -247,11 +247,12 @@
   ((account org_password 'alias) alias_password)
   account)
 
-(define paul-acc (make-joint peter-acc 'secret-password 'alias_password))
+(define paul-acc (make-joint peter-acc 'secret-password 'alias-password))
 
-((paul-acc 'alias_password 'withdraw) 10)
-((peter-acc 'secret_password 'withdraw) 20)
-((paul-acc 'alias_password 'withdraw) 30)
+((paul-acc 'alias-password 'withdraw) 10)
+((peter-acc 'secret-password 'withdraw) 20)
+((paul-acc 'alias-password 'withdraw) 30)
+((paul-acc 'bad-password 'withdraw) 30)
 
 (say "Exercise 3.8")
 
@@ -412,4 +413,26 @@ zz
 ;(count-pairs lcircle) ; this will lead to infinite loop
 
 
+(say "Exercise 3.17")
+
+(define (correct-count-pairs lst)
+  (let ((counted '()))
+    (define (counted? x y)
+      (cond ((eq? x '()) #f)
+            (else 
+              (cond ((eq? (mcar x) y) #t)
+                    (else (counted? (mcdr x) y))))))
+    (define (count-pairs x)
+      (if (not (counted? lst x))
+        (begin
+          (set! counted (mappend counted x))
+          (if (not (pair? x))
+            0
+            (+ (count-pairs (mcar x))
+               (count-pairs (mcdr x))
+               1)))
+        (display "counted\n")))
+    (count-pairs (mcar lst))))
+
+(correct-count-pairs l3)
 
