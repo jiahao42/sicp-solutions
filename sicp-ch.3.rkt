@@ -291,12 +291,13 @@
 ; See https://stackoverflow.com/questions/9475366/set-car-set-cdr-unbound-in-racket
 (require rnrs/mutable-pairs-6)
 (require compatibility/mlist)
+; (eq? set-cdr! set-mcdr!) --> #t
 
 (define x (mlist 'a 'b))
 (define y (mlist 'c 'd))
 (define z (mappend x y))
 z
-(mcdr x) ; x is still ('a 'b)
+(mcdr x) ; x is still ('a 'b), as it's copy by value
 
 (define (last-mpair lst)
   (cond ((eq? '() (mcdr lst))
@@ -308,5 +309,19 @@ z
   x)
 
 (define w (append! x y))
-(mcdr x) ; x is ('a 'b 'c 'd)
+(mcdr x) ; x is ('a 'b 'c 'd), as it's modified in place.
+
+
+(say "Exercise 3.13")
+
+(define (make-cycle x)
+  (set-mcdr! (last-mpair x) x)
+  x)
+
+(define zz (make-cycle (mlist 'a 'b 'c)))
+zz
+;(last-mpair zz) ; it will run infinitely
+
+
+
 
