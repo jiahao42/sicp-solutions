@@ -374,5 +374,42 @@ zz
 
 
 
+(say "Exercise 3.16")
+
+(define (count-pairs x)
+  (if (not (mpair? x))
+    0
+    (+ (count-pairs (mcar x))
+       (count-pairs (mcdr x))
+       1)))
+
+(define l3 (mlist 1 2 3))
+(count-pairs l3)
+
+(define l4 (mlist 1 2 3))
+(set-mcar! l4 (mcdr (mcdr l4)))
+; _____________
+; |           |
+; |           V
+; 1 --> 2 --> 3
+
+(count-pairs l4) ; 4 = 3 + 1
+
+(define l7 (mlist 1 2 3))
+(set-mcar! l7 (mcdr l7))
+(set-mcar! (mcdr l7) (mcdr (mcdr l7)))
+; _______
+; |     |      
+; |     V      
+; 1 --> 2 --> 3
+;       |     ^
+;       |     |
+;       -------
+(count-pairs l7) ; 7 = 3 + 2 + 2
+
+(define lcircle (mlist 1 2 3))
+(set-mcar! (mcdr lcircle) lcircle)
+;(count-pairs lcircle) ; this will lead to infinite loop
+
 
 
