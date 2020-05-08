@@ -287,4 +287,26 @@
 ; Env5: (fact-iter 360 5 2)
 ; Env6: (fact-iter 720 6 1)
 
+(say "Exercise 3.12")
+; See https://stackoverflow.com/questions/9475366/set-car-set-cdr-unbound-in-racket
+(require rnrs/mutable-pairs-6)
+(require compatibility/mlist)
+
+(define x (mlist 'a 'b))
+(define y (mlist 'c 'd))
+(define z (mappend x y))
+z
+(mcdr x) ; x is still ('a 'b)
+
+(define (last-mpair lst)
+  (cond ((eq? '() (mcdr lst))
+         lst)
+        (else (last-mpair (mcdr lst)))))
+
+(define (append! x y)
+  (set-mcdr! (last-mpair x) y)
+  x)
+
+(define w (append! x y))
+(mcdr x) ; x is ('a 'b 'c 'd)
 
