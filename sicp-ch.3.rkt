@@ -428,7 +428,7 @@ zz
       (if (not (counted? counted x))
         (begin
           (set! counted (mcons x counted))
-          ;(set! counted (mcons counted x)) ; do not use this! think abou way.
+          ;(set! counted (mcons counted x)) ; do not use this! think abou why.
           (if (not (mpair? x))
             0
             (+ (count-pairs (mcar x))
@@ -460,3 +460,12 @@ zz
 
 (circle-detector (make-cycle (mlist 'a 'b 'c)))
 (circle-detector (mlist 1 2 3))
+
+(say "Exercise 3.19")
+
+(define (optimized-circle-detector lst) ; runs in constant space
+  (let ((head (mcar lst)))
+    (find-in-mlist (mcdr lst) head)))
+
+(optimized-circle-detector (make-cycle (mlist 'a 'b 'c)))
+(optimized-circle-detector (mlist 1 2 3))
