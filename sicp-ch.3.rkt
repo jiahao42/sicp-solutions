@@ -418,21 +418,24 @@ zz
 (define (correct-count-pairs lst)
   (let ((counted '()))
     (define (counted? x y)
-      (cond ((eq? x '()) #f)
-            (else 
+      (cond ((not (mpair? x)) (eq? x y))
+            (else
               (cond ((eq? (mcar x) y) #t)
-                    (else (counted? (mcdr x) y))))))
+               (else (counted? (mcdr x) y))))))
     (define (count-pairs x)
-      (if (not (counted? lst x))
+      (if (not (counted? counted x))
         (begin
-          (set! counted (mappend counted x))
-          (if (not (pair? x))
+          (set! counted (mcons x counted))
+          ;(set! counted (mcons counted x)) ; do not use this! think abou way.
+          (if (not (mpair? x))
             0
             (+ (count-pairs (mcar x))
                (count-pairs (mcdr x))
                1)))
-        (display "counted\n")))
-    (count-pairs (mcar lst))))
+        0))
+    (count-pairs lst)))
 
 (correct-count-pairs l3)
+(correct-count-pairs l4)
+(correct-count-pairs l7)
 
