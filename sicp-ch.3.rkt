@@ -415,13 +415,15 @@ zz
 
 (say "Exercise 3.17")
 
+(define (find-in-mlist lst target)
+  (cond ((not (mpair? lst)) (eq? lst target))
+        (else
+          (cond ((eq? (mcar lst) target) #t)
+                (else (find-in-mlist (mcdr lst) target))))))
+
 (define (correct-count-pairs lst)
   (let ((counted '()))
-    (define (counted? x y)
-      (cond ((not (mpair? x)) (eq? x y))
-            (else
-              (cond ((eq? (mcar x) y) #t)
-               (else (counted? (mcdr x) y))))))
+    (define counted? find-in-mlist)
     (define (count-pairs x)
       (if (not (counted? counted x))
         (begin
@@ -439,3 +441,22 @@ zz
 (correct-count-pairs l4)
 (correct-count-pairs l7)
 
+
+(say "Exercise 3.18")
+
+(define (circle-detector lst)
+  (let ((seen '()))
+    (define seen? find-in-mlist)
+    (define (go x)
+      (if (null? x) 
+        #f
+        (if (seen? seen x)
+          #t
+          (begin
+            (set! seen (mcons x seen))
+            (go (mcdr x))))))
+    (go lst)
+    ))
+
+(circle-detector (make-cycle (mlist 'a 'b 'c)))
+(circle-detector (mlist 1 2 3))
