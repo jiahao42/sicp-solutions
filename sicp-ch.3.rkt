@@ -322,6 +322,19 @@ z
 zz
 ;(last-mpair zz) ; it will run infinitely
 
+(say "Exercise 3.14")
 
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x)
+      y
+      (let ((temp (mcdr x)))
+        (set-mcdr! x y)
+        (loop temp x))))
+  (loop x '()))
+
+; it reverse the list in place
+(define v (mlist 'a 'b 'c 'd))
+(mystery v)
 
 
