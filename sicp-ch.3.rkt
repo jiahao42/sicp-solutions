@@ -642,4 +642,47 @@ zz
 ((dq 'delete) 'front)
 ((dq 'delete) 'rear)
 
+(say "Exercise 3.24")
+
+(define (mcaar pair)
+  (mcar (mcar pair)))
+
+(define (make-1d-table same-key?) 
+  (let ((table (mlist '*table*)))
+    (define (assoc key records)
+      (cond ((null? records) false)
+            ((same-key? key (mcaar records)) (mcar records))
+            (else (assoc key (mcdr records)))))
+    (define (lookup key)
+      (let ((record (assoc key (mcdr table))))
+        (if record 
+          (mcdr record)
+          false)))
+    (define (insert! key value)
+      (let ((record (assoc key (mcdr table))))
+        (if record
+          (set-mcdr! record value)
+          (set-mcdr! table
+                    (mcons (mcons key value)
+                           (mcdr table)))))
+      'ok)
+    (define (dispatch msg)
+      (cond ((eq? msg 'insert!)
+             insert!)
+            ((eq? msg 'lookup)
+             lookup)
+            (else (error "Unsupported msg" msg))))
+    dispatch))
+
+(define table1 (make-1d-table
+  (λ (x y) 
+     (if (< (abs (- x y)) 5) #t #f))))
+
+((table1 'insert!) 1 'a)
+((table1 'insert!) 10 'b)
+((table1 'insert!) 100 'c)
+((table1 'lookup) 1)
+((table1 'lookup) 6)
+
+
 
