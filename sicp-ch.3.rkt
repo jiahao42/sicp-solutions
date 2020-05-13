@@ -685,4 +685,69 @@ zz
 ((table1 'lookup) 6)
 
 
+(say "Exercise 3.25")
+
+
+(define (make-table) 
+  (let ((table (mlist '*table*)))
+    (define (assoc key records)
+      (cond ((null? records) false)
+            ((eq? key (mcaar records)) (mcar records))
+            (else (assoc key (mcdr records)))))
+    (define (lookup keys)
+      (define (find-subtable lst subtable) ; find subtable, if not exist, return #f
+        (define key (if (mpair? lst) (mcar lst) lst))
+        (let ((record
+                (assoc
+                  key
+                  (mcdr subtable))))
+          (if record
+            (if (null? (mcdr lst)) ; it's alreay the last element
+              (mcdr record) ; return what has been found
+              (find-subtable (mcdr lst) record)) ; dig deeper
+            #f)))
+      (find-subtable keys table))
+
+    (define (insert! keys value)
+      (define (find-subtable lst subtable) ; find subtable, if not exist, build it
+        (define key (if (mpair? lst) (mcar lst) lst))
+        (if (not (mpair? (mcdr lst))) ; if it's last element
+          subtable
+          (let ((record 
+                  (assoc 
+                    key
+                    (mcdr subtable))))
+            (if record
+              (find-subtable (mcdr lst) record) ; dig deeper
+              (begin ; build table
+               (set-mcdr! subtable (mcons (mcons key '()) (mcdr subtable)))
+               (find-subtable (mcdr lst) (mcar (mcdr subtable)))
+               ))
+            )))
+      (let ((subtable (find-subtable keys table))
+            (last-key (mcar (last-mpair keys))))
+        (let ((record (assoc last-key (mcdr subtable))))
+          (if record
+            (set-mcdr! record value)
+            (set-mcdr! subtable
+                       (mcons (mcons last-key value)
+                              (mcdr subtable))))))
+      'ok 
+      )
+    (define (dispatch msg)
+      (cond ((eq? msg 'insert!)
+             insert!)
+            ((eq? msg 'lookup)
+             lookup)
+            (else (error "Unsupported msg" msg))))
+    dispatch))
+
+(define table (make-table))
+((table 'insert!) (mlist 1 2 3) 'a)
+((table 'insert!) (mlist 1 2 4) 'b)
+((table 'lookup) (mlist 1 2 3))
+((table 'lookup) (mlist 1 2 4))
+((table 'lookup) (mlist 1 2 5))
+((table 'lookup) (mlist 1 2))
+
 
