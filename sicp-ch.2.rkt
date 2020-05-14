@@ -387,4 +387,16 @@ zero
 (reverse (list (list 1 2) (list 3 4)))
 (deep-reverse (list (list 1 2) (list 3 4)))
 
-
+(say "Exercise 2.28")
+(define (fringe root)
+  (if (null? root)
+    '()
+    (if (pair? root)
+      (append (fringe (car root)) (fringe (cdr root)))
+      (list root))))
+(define tree1 (cons (list 1 2) (list 3 4)))
+(define tree2 (cons (list 1 2) (list 3 4 (list 5 6))))
+tree1
+(fringe tree1)
+tree2
+(fringe tree2)
