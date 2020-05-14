@@ -341,5 +341,15 @@ zero
   (iter items '()))
 (square-list-iter (list 1 2 3 4))
 
+(say "Exercise 2.23")
+
+(define (my-for-each func lst)
+  (if (null? lst)
+    #t
+    (begin
+      (func (car lst))
+      (my-for-each func (cdr lst)))))
+(my-for-each (λ (x) (say (square x))) (list 1 2 3 4))
+
 
 
