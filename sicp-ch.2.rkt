@@ -573,6 +573,15 @@ tree2
   (my-accumulate (λ (x y) (+ y 1)) 0 sequence))
 (my-length (list 1 2 3))
 
+(say "Exercise 2.34")
+(define (horner-eval x coefficient-sequence)
+  (my-accumulate (λ (this-coeff higher-terms) 
+                    (+ (* higher-terms x) this-coeff))
+                 0
+                 coefficient-sequence))
+; a0 = 1, a1 = 2, a2 = 3, x = 2
+; a2x^2 + a1x + a0 = (a2x + a1)x + a0 = (3 * 2 + 2) * 2 + 1 = 17
+(horner-eval 2 (list 1 2 3)) 
 
 
 
