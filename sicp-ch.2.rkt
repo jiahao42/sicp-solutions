@@ -541,6 +541,24 @@ tree2
        tree))
 (tree-map square (list 1 (list 2 (list 3 4) 5) (list 6 7)))
 
+(say "Exercise 2.32")
+(define (subsets s)
+  (if (null? s)
+    (list '())
+    (let ((rest (subsets (cdr s))))
+      (append rest (map 
+                     (λ (item) (cons (car s) item))
+                     rest)))))
+
+(subsets (list 1 2 3))
+; the subsets is constructed as following:
+; when iterating at '(): ('())
+; when iterating at 3: ('() (3))
+; when iterating at 2: ('() (3) (2) (2 3))
+; when iterating at 1: ('() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3))
+
+
+
 
 
 
