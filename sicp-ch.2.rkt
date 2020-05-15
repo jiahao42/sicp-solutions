@@ -526,11 +526,21 @@ tree2
 (square-tree (list 1 (list 2 (list 3 4) 5) (list 6 7)))
 (define (square-tree-map tree)
   (map (λ (sub-tree)
-       (if (pair? sub-tree)
-         (square-tree-map sub-tree)
-         (square sub-tree)))
-  tree))
+         (if (pair? sub-tree)
+           (square-tree-map sub-tree)
+           (square sub-tree)))
+      tree))
 (square-tree-map (list 1 (list 2 (list 3 4) 5) (list 6 7)))
+
+(say "Exercise 2.31")
+(define (tree-map f tree)
+  (map (λ (sub-tree) 
+          (if (pair? sub-tree)
+            (tree-map f sub-tree)
+            (f sub-tree)))
+       tree))
+(tree-map square (list 1 (list 2 (list 3 4) 5) (list 6 7)))
+
 
 
 
