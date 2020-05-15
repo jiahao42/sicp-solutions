@@ -400,3 +400,123 @@ tree1
 (fringe tree1)
 tree2
 (fringe tree2)
+
+(say "Exercise 2.29")
+;; 2.29.a
+(define (make-mobile left right)
+  (list left right))
+(define (make-branch length structure)
+  (list length structure))
+;      mobile
+;     /     \
+;   branch  branch
+;
+;      branch
+;     /      \
+;   length   weight/mobile
+(define (left-branch mobile)
+  (car mobile))
+(define (right-branch mobile)
+  (cdr mobile))
+(define (branch-length mobile)
+  (left-branch mobile))
+(define (branch-structure mobile)
+  (right-branch mobile))
+;; 2.29.b
+(say "Exercise 2.29.b")
+(define (total-weight mobile)
+  (if 
+    (not (pair? mobile)) ; weight
+      mobile
+      (+ 
+        (if (pair? (car mobile))
+          (total-weight (car mobile)) ; mobile
+          0) ; length
+        (total-weight (cadr mobile)))))
+(define branch-1 (make-branch 5 10))
+(define sub-mobile (make-mobile branch-1 branch-1))
+(define branch-2 (make-branch 5 sub-mobile))
+(define mobile (make-mobile branch-1 branch-2))
+(total-weight mobile)
+(total-weight branch-1)
+(total-weight branch-2)
+;; 2.29.c
+(say "Exercise 2.29.c")
+(define (total-product mobile)
+  (if (not (pair? mobile)) ; weight
+    mobile
+    (if (pair? (car mobile)) ; left side
+      (+ 
+        (total-product (car mobile)) ; mobile
+        (total-product (cadr mobile)))
+      (+
+        0
+        (* (car mobile) (total-product (cadr mobile)))))))
+(total-product mobile)
+(total-product branch-1)
+(total-product branch-2)
+(total-product sub-mobile)
+(define (mobile? mobile)
+  (and (pair? mobile) (pair? (car mobile)) (pair? (cadr mobile))))
+(define (balanced? mobile)
+  (if (null? mobile)
+    #t
+    (if (mobile? mobile)
+      (eq? (total-product (car mobile)) (total-product (cadr mobile)))
+      (and (balanced? (cadr mobile)) (balanced? (car mobile))))))
+(balanced? mobile)
+(balanced? (make-mobile sub-mobile sub-mobile))
+
+; 2.29.d
+(say "Exercise 2.29.d")
+; The key is to change "cadr" to "cdr"
+; as there is no '() attached at the end of list 
+(define (make-mobile-alt left right)
+  (cons left right))
+(define (make-branch-alt length structure)
+  (cons length structure))
+(define branch-1-alt (make-branch-alt 5 10))
+(define sub-mobile-alt (make-mobile-alt branch-1-alt branch-1-alt))
+(define branch-2-alt (make-branch-alt 5 sub-mobile-alt))
+(define mobile-alt (make-mobile-alt branch-1-alt branch-2-alt))
+(define (total-weight-alt mobile)
+  (if (not (pair? mobile)) ; weight
+    mobile
+    (+ 
+      (if (pair? (car mobile))
+        (total-weight-alt (car mobile)) ; mobile
+        0) ; length
+      (total-weight-alt (cdr mobile)))))
+(total-weight-alt mobile-alt)
+(total-weight-alt branch-1-alt)
+(total-weight-alt branch-2-alt)
+(define (total-product-alt mobile)
+  (if (not (pair? mobile)) ; weight
+    mobile
+    (if (pair? (car mobile)) ; left side
+      (+ 
+        (total-product-alt (car mobile)) ; mobile
+        (total-product-alt (cdr mobile)))
+      (+
+        0
+        (* (car mobile) (total-product-alt (cdr mobile)))))))
+
+(total-product-alt mobile-alt)
+(total-product-alt branch-1-alt)
+(total-product-alt branch-2-alt)
+(total-product-alt sub-mobile-alt)
+(define (mobile-alt? mobile)
+  (and (pair? mobile) (pair? (car mobile)) (pair? (cdr mobile))))
+(define (balanced-alt? mobile)
+  (if (null? mobile)
+    #t
+    (if (mobile-alt? mobile)
+      (eq? (total-product-alt (car mobile)) (total-product-alt (cdr mobile)))
+      (and (balanced-alt? (cdr mobile)) (balanced-alt? (car mobile))))))
+(balanced-alt? mobile-alt)
+(balanced-alt? (make-mobile-alt sub-mobile-alt sub-mobile-alt))
+
+
+
+
+
