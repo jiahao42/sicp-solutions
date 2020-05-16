@@ -583,6 +583,19 @@ tree2
 ; a2x^2 + a1x + a0 = (a2x + a1)x + a0 = (3 * 2 + 2) * 2 + 1 = 17
 (horner-eval 2 (list 1 2 3)) 
 
+(say "Exercise 2.35")
+(define (count-leaves t)
+  (my-accumulate 
+    +
+    0 
+    (map (λ (tree) 
+            (cond 
+              ((null? tree) 0)
+              ((pair? tree) (count-leaves tree))
+              (else 1))) 
+         t)))
+(count-leaves (list 1 (list 2 (list 3 4) 5)))
+
 
 
 
