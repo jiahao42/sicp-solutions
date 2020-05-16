@@ -659,4 +659,17 @@ tree2
 (eq? (fold-right * 1 (list 1 2 3)) (fold-left * 1 (list 1 2 3)))
 
 
+(say "Exercise 2.39")
+(define (reverse-fold-left sequence)
+  (fold-left (λ (x y) (cons y x)) '() sequence))
+(reverse-fold-left (list 1 2 3))
+
+(define (reverse-fold-right sequence)
+  (fold-right (λ (x y) 
+                 (if (null? y)
+                   (cons x '())
+                   (append y (cons x '())))
+                 ) 
+              '() sequence))
+(reverse-fold-right (list 1 2 3))
 
