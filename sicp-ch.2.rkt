@@ -596,6 +596,22 @@ tree2
          t)))
 (count-leaves (list 1 (list 2 (list 3 4) 5)))
 
-
+(say "Exercise 2.36")
+(define (get-heads lst)
+  (if (null? lst)
+    '()
+    (cons (caar lst) (get-heads (cdr lst)))))
+(define (get-tails lst)
+  (if (null? lst)
+    '()
+    (cons (cdar lst) (get-tails (cdr lst)))))
+(define (my-accumulate-n op init seqs)
+  (if (null? (car seqs))
+    '()
+    (cons (my-accumulate op init (get-heads seqs))
+          (my-accumulate-n op init (get-tails seqs)))))
+(get-heads (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
+(get-tails (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
+(my-accumulate-n + 0 (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
 
 
