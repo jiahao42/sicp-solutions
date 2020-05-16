@@ -614,4 +614,30 @@ tree2
 (get-tails (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
 (my-accumulate-n + 0 (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
 
+(say "Exercise 2.37")
+(define vector-1 (list 1 2 3 4))
+(define vector-2 (list 5 6 7 8))
+(define matrix (list vector-1 vector-2 vector-1 vector-2))
+(define (dot-product v w)
+  (my-accumulate + 0 (map * v w)))
+(dot-product vector-1 vector-2)
+
+(define (matrix-*-vector m v)
+  (map (λ (mv) (dot-product mv v)) m))
+(matrix-*-vector matrix vector-2)
+
+;(my-accumulate-n cons '() (list (list 1 2 3) (list 1 2 3)))
+
+(define (transpose m)
+  (my-accumulate-n 
+    cons
+    '() m))
+(say matrix)
+(transpose matrix)
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map 
+      (λ (v) (matrix-*-vector cols v)) m)))
+(matrix-*-matrix matrix matrix)
 
