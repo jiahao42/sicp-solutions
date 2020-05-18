@@ -558,24 +558,24 @@ tree2
 ; when iterating at 1: ('() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3))
 
 (say "Exercise 2.33")
-(define (my-accumulate op initial sequence)
+(define (accumulate op initial sequence)
   (if (null? sequence)
     initial
     (op (car sequence)
-        (my-accumulate op initial (cdr sequence)))))
+        (accumulate op initial (cdr sequence)))))
 (define (my-map p sequence)
-  (my-accumulate (λ (x y) (cons (p x) y)) '() sequence))
+  (accumulate (λ (x y) (cons (p x) y)) '() sequence))
 (my-map square (list 1 2 3))
 (define (my-append seq1 seq2)
-  (my-accumulate cons seq2 seq1))
+  (accumulate cons seq2 seq1))
 (my-append (list 1 2 3) (list 4 5 6))
 (define (my-length sequence)
-  (my-accumulate (λ (x y) (+ y 1)) 0 sequence))
+  (accumulate (λ (x y) (+ y 1)) 0 sequence))
 (my-length (list 1 2 3))
 
 (say "Exercise 2.34")
 (define (horner-eval x coefficient-sequence)
-  (my-accumulate (λ (this-coeff higher-terms) 
+  (accumulate (λ (this-coeff higher-terms) 
                     (+ (* higher-terms x) this-coeff))
                  0
                  coefficient-sequence))
@@ -585,7 +585,7 @@ tree2
 
 (say "Exercise 2.35")
 (define (count-leaves t)
-  (my-accumulate 
+  (accumulate 
     +
     0 
     (map (λ (tree) 
@@ -605,31 +605,31 @@ tree2
   (if (null? lst)
     '()
     (cons (cdar lst) (get-tails (cdr lst)))))
-(define (my-accumulate-n op init seqs)
+(define (accumulate-n op init seqs)
   (if (null? (car seqs))
     '()
-    (cons (my-accumulate op init (get-heads seqs))
-          (my-accumulate-n op init (get-tails seqs)))))
+    (cons (accumulate op init (get-heads seqs))
+          (accumulate-n op init (get-tails seqs)))))
 (get-heads (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
 (get-tails (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
-(my-accumulate-n + 0 (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
+(accumulate-n + 0 (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
 
 (say "Exercise 2.37")
 (define vector-1 (list 1 2 3 4))
 (define vector-2 (list 5 6 7 8))
 (define matrix (list vector-1 vector-2 vector-1 vector-2))
 (define (dot-product v w)
-  (my-accumulate + 0 (map * v w)))
+  (accumulate + 0 (map * v w)))
 (dot-product vector-1 vector-2)
 
 (define (matrix-*-vector m v)
   (map (λ (mv) (dot-product mv v)) m))
 (matrix-*-vector matrix vector-2)
 
-;(my-accumulate-n cons '() (list (list 1 2 3) (list 1 2 3)))
+;(accumulate-n cons '() (list (list 1 2 3) (list 1 2 3)))
 
 (define (transpose m)
-  (my-accumulate-n 
+  (accumulate-n 
     cons
     '() m))
 (say matrix)
@@ -649,7 +649,7 @@ tree2
       (iter (op result (car rest))
             (cdr rest))))
   (iter initial sequence))
-(define fold-right my-accumulate)
+(define fold-right accumulate)
 
 (fold-right / 1 (list 1 2 3))
 (fold-left / 1 (list 1 2 3))
@@ -672,4 +672,51 @@ tree2
                  ) 
               '() sequence))
 (reverse-fold-right (list 1 2 3))
+
+(say "Exercise 2.40")
+(define (enumerate-interval low high)
+  (if (> low high)
+    '()
+    (cons low (enumerate-interval (+ low 1) high))))
+(define (flatmap proc seq)
+  (accumulate append '() (map proc seq)))
+(define (prime? num)
+  (define (prime-internal counter)
+    (if (= counter 1)
+      #t
+      (and (not (= 0 (modulo num counter))) (prime-internal (- counter 1)))))
+  (cond ((= num 1) #f)
+        ((= num 2) #t)
+        (else (prime-internal (- num 1)))))
+;(prime? 2)
+;(prime? 4)
+;(prime? 10)
+;(prime? 11)
+;(prime? 17)
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+(define (unique-pairs n)
+  (flatmap
+    (λ (i) 
+       (map (λ (j) 
+               (list i j))
+            (enumerate-interval 1 (- i 1))))
+    (enumerate-interval 1 n)))
+(define (prime-sum-pairs n)
+  (map make-pair-sum 
+       (filter prime-sum? (unique-pairs n))))
+(prime-sum-pairs 6)
+(define (remove item sequence)
+  (filter (λ (x) (not (= x item)))
+          sequence))
+(define (permutations s)
+  (if (null? s)
+    (list '())
+    (flatmap (λ (x) 
+                (map (λ (p) (cons x p))
+                     (permutations (remove x s))))
+             s)))
+
 
