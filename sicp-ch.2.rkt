@@ -718,5 +718,9 @@ tree2
                 (map (λ (p) (cons x p))
                      (permutations (remove x s))))
              s)))
-
-
+(say "Exercise 2.41")
+(define (ranged-triples n s)
+  (filter 
+    (λ (pair) (< (caddr pair) s))
+    (map make-pair-sum (unique-pairs n))))
+(ranged-triples 6 10)
