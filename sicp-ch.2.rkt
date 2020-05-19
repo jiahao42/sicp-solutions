@@ -762,3 +762,25 @@ tree2
 (define sols (queens 8))
 ;sols
 (length sols) ; 92 solutions in total
+
+(say "Exercise 2.43")
+
+(define (slow-queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+      (list empty-board)
+      (filter
+        (λ (positions) (safe? k positions)) ; (solution1, solution2, ...)
+        (flatmap
+          (λ (new-row) 
+             (map (λ (rest-of-queens) 
+                     (adjoin-position 
+                       new-row k rest-of-queens))
+                  (queen-cols (- k 1))))
+          (enumerate-interval 1 board-size)))))
+  (queen-cols board-size))
+
+;(length (slow-queens 8))
+; The issue is that `queen-cols` runs far slower than `enumerate-interval`, by interchange their position, the number of calls to `queen-cols` increases a lot.  
+
+
