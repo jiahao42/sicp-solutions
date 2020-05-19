@@ -724,3 +724,41 @@ tree2
     (λ (pair) (< (caddr pair) s))
     (map make-pair-sum (unique-pairs n))))
 (ranged-triples 6 10)
+
+(say "Exercise 2.42")
+(define (safe? k positions)
+  (let ((new-queen (last-pair positions)))
+    (define (safe-internal n queens)
+      (let ((this-queen (car queens)))
+        (cond 
+          ((equal? this-queen new-queen) #t)
+          ((or
+              (equal? (+ (car this-queen) n) (car new-queen)) ; diagonal
+              (equal? (- (car this-queen) n) (car new-queen)) ; diagonal
+              (equal? (car this-queen) (car new-queen))) ; same line
+             #f)
+          (else 
+            (safe-internal (- n 1) (cdr queens))))))
+    (safe-internal (- (length positions) 1) positions)))
+(define empty-board '())
+(define (adjoin-position new-row k rest-of-queens)
+  (append rest-of-queens (list (list new-row k)))) ; row, col
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+      (list empty-board)
+      (filter
+        (λ (positions) (safe? k positions)) ; (solution1, solution2, ...)
+        (flatmap
+          (λ (rest-of-queens) 
+             (map (λ (new-row) 
+                     (adjoin-position ; (append rest-of-queens (new-row k))
+                       new-row k rest-of-queens))
+                  (enumerate-interval 1 board-size))) ; (1 2 3 ... board-size)
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+(define sols (queens 8))
+;sols
+(length sols) ; 92 solutions in total
