@@ -818,4 +818,29 @@ tree2
       (below (flip-vert half) half))))
 (paint (corner-split wave 4))
 
+(say "Exercise 2.45")
+(define (square-of-four tl tr bl br)
+  (λ (painter) 
+     (let ((top (beside (tl painter) (tr painter)))
+           (bottom (beside (bl painter) (br painter))))
+       (below bottom top))))
+
+(define (flipped-pairs painter)
+  (let ((combine4 (square-of-four identity flip-vert
+                                  identity flip-vert)))
+    (combine4 painter)))
+
+(define (square-limit painter n)
+  (let ((combine4 (square-of-four flip-horiz identity
+                                  rotate180 flip-vert)))
+    (combine4 (corner-split painter n))))
+(define (split dir1 dir2)
+  (define (split-internal painter n)
+    (if (= n 0)
+      painter 
+      (let ((smaller (split-internal painter (- n 1))))
+        (dir1 painter (dir2 smaller smaller)))))
+  split-internal)
+(define general-right-split (split beside below))
+(define general-up-split (split below beside))
 
