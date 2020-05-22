@@ -899,6 +899,7 @@ segment
 (end-segment segment)
 
 (say "Exercise 2.49")
+; https://stackoverflow.com/questions/13592352/compiling-sicp-picture-exercises-in-drracket
 (require graphics/graphics)
 (open-graphics)
 (define frame-size 500)
@@ -979,10 +980,12 @@ segment
      vertical-line
      horizontal-line)))
 
-;(outline my-frame)
-;(X my-frame)
-;(diamond my-frame)
-;(T my-frame)
+(define (paint painter)
+  (painter my-frame))
+;(paint outline)
+;(paint X)
+;(paint diamond)
+;(paint T)
 
 ; I didn't draw wave :)
 
@@ -1019,10 +1022,10 @@ segment
     (make-vect 0.0 0.0)
     (make-vect 0.65 0.35)
     (make-vect 0.35 0.65)))
-(T my-frame)
-((shrink-to-upper-right T) my-frame)
-((rotate90 T) my-frame)
-;((squash-inwards T) my-frame)
+;(paint T)
+;(paint (shrink-to-upper-right T))
+;(paint (rotate90 T))
+;(paint (squash-inwards T))
 
 (define (rotate180 painter)
   (transform-painter
@@ -1031,7 +1034,7 @@ segment
     (make-vect 0.0 1.0)
     (make-vect 1.0 0.0)))
 (define flip-horiz rotate180)
-((flip-horiz T) my-frame)
+;(paint (flip-horiz T))
 
 (define (rotate270 painter)
   (transform-painter
@@ -1039,5 +1042,54 @@ segment
     (make-vect 0.0 1.0)
     (make-vect 0.0 0.0)
     (make-vect 1.0 1.0)))
-((rotate270 T) my-frame)
+;(paint (rotate270 T))
+
+(say "Exercise 2.51")
+(define (my-beside painter1 painter2)
+  (let ((split-point (make-vect 0.5 0.0)))
+    (let ((paint-left
+            (transform-painter
+              painter1
+              (make-vect 0.0 0.0)
+              split-point
+              (make-vect 0.0 1.0)))
+          (paint-right
+            (transform-painter
+              painter2
+              split-point
+              (make-vect 1.0 0.0)
+              (make-vect 0.5 1.0))))
+      (λ (frame)
+         (paint-left frame)
+         (paint-right frame)))))
+;(paint (my-beside T T))
+(define (my-below painter1 painter2)
+  (let ((split-point (make-vect 0 0.5)))
+    (let ((paint-left
+            (transform-painter
+              painter1
+              (make-vect 0.0 0.0)
+              (make-vect 1.0 0.0)
+              split-point))
+          (paint-right
+            (transform-painter
+              painter2
+              split-point
+              (make-vect 1.0 0.5)
+              (make-vect 0.0 1.0))))
+      (λ (frame)
+         (paint-left frame)
+         (paint-right frame)))))
+;(paint (my-below T T))
+
+(define (my-below-alt painter1 painter2)
+  (let ((rotated1 (rotate90 painter1))
+        (rotated2 (rotate90 painter2)))
+    (let ((aligned (my-beside rotated1 rotated2)))
+      (rotate270 aligned))))
+;(paint (my-below-alt T T))
+
+
+
+
 
