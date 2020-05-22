@@ -973,10 +973,10 @@ segment
 
 (define (paint painter)
   (painter my-frame))
-;(paint outline)
-;(paint X)
-;(paint diamond)
-;(paint T)
+(paint outline)
+(paint X)
+(paint diamond)
+(paint T)
 
 ; I didn't draw wave :)
 
@@ -1013,10 +1013,10 @@ segment
     (make-vect 0.0 0.0)
     (make-vect 0.65 0.35)
     (make-vect 0.35 0.65)))
-;(paint T)
-;(paint (shrink-to-upper-right T))
-;(paint (rotate90 T))
-;(paint (squash-inwards T))
+(paint T)
+(paint (shrink-to-upper-right T))
+(paint (rotate90 T))
+(paint (squash-inwards T))
 
 (define (rotate180 painter)
   (transform-painter
@@ -1106,12 +1106,26 @@ segment
             (corner (corner-split-alt painter (- n 1))))
         (beside (below painter top-left)
                 (below bottom-right corner))))))
-;(paint (corner-split-alt wave 4))
+;(paint (corner-split-alt wave 4)) ; run this in DrRacket
 
 ; 2.52.c
 (define (square-limit-alt painter n)
   (let ((quarter (rotate180 (corner-split painter n))))
     (let ((half (beside (flip-horiz quarter) quarter)))
       (below (flip-vert half) half))))
-(paint (square-limit-alt wave 4))
+;(paint (square-limit-alt wave 4)) ; run this in DrRacket
+
+(say "Exercise 2.53")
+(define (memq item x)
+  (cond ((null? x) false)
+        ((eq? item (car x)) x)
+        (else (memq item (cdr x)))))
+(memq 'apple '(x (apple sauce) y apple pear))
+(list 'a 'b 'c) ; '(a b c)
+(list (list 'george)) ; '((george))
+(cdr '((x1 x2) (y1 y2))) ; '((y1 y2))
+(cadr '((x1 x2) (y1 y2))) ; '(y1 y2)
+(pair? (car '(a short list))) ; #f
+(memq 'red '((red shoes) (blue socks))) ; #f
+(memq 'red '(red shoes blue socks)) ; '(red shoes blue socks)
 
