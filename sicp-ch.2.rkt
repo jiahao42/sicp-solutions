@@ -973,4 +973,35 @@ segment
 ; I didn't draw wave :)
 
 
-
+(say "Exercise 2.50")
+(define (transform-painter painter origin corner1 corner2)
+  (λ (frame)
+     (let ((m (frame-coord-map frame)))
+       (let ((new-origin (m origin)))
+         (painter (make-frame
+                    new-origin
+                    (sub-vect (m corner1) new-origin)
+                    (sub-vect (m corner2) new-origin)))))))
+(define (flip-vert painter)
+  (transform-painter painter
+                     (make-vert 0.0 1.0)
+                     (make-vert 1.0 1.0)
+                     (make-vert 0.0 0.0)))
+(define (shrink-to-upper-right painter)
+  (transform-painter
+    painter 
+    (make-vert 0.5 0.5)
+    (make-vert 1.0 0.5)
+    (make-vert 0.5 1.0)))
+(define (rotate90 painter)
+  (transform-painter 
+    (make-vert 1.0 0.0)
+    (make-vert 1.0 1.0)
+    (make-vert 0.0 0.0)))
+(define (squash-inwards painter)
+  (transform-painter
+    painter
+    (make-vert 0.0 0.0)
+    (make-vert 0.65 0.35)
+    (make-vert 0.35 0.65)))
+(shrink-to-upper-right einstein)
