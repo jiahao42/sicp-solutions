@@ -856,24 +856,15 @@ tree2
   (make-vect (+ (xcor-vect vect1) (xcor-vect vect2)) (+ (ycor-vect vect1) (ycor-vect vect2))))
 (define (sub-vect vect1 vect2)
   (make-vect (- (xcor-vect vect1) (xcor-vect vect2)) (- (ycor-vect vect1) (ycor-vect vect2))))
-(define (scale-vect vect factor)
+(define (scale-vect factor vect)
   (make-vect (* (xcor-vect vect) factor) (* (ycor-vect vect) factor)))
-(define origin-frame frame-origin)
-(define edge1-frame frame-edge1)
-(define edge2-frame frame-edge2)
-(define (frame-coord-map frame)
-  (λ (v) 
-     (add-vect
-       (origin-frame frame)
-       (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
-                 (scale-vect (ycor-vect v) (edge2-frame frame))))))
 (define vect1 (make-vect 1 2))
 (define vect2 (make-vect 3 4))
 vect1
 vect2
 (add-vect vect1 vect2)
 (sub-vect vect1 vect2)
-(scale-vect vect1 10)
+(scale-vect 10 vect1)
 
 (say "Exercise 2.47")
 (define (make-frame-list origin edge1 edge2)
@@ -908,14 +899,78 @@ segment
 (end-segment segment)
 
 (say "Exercise 2.49")
+(require graphics/graphics)
+(open-graphics)
+(define vp (open-viewport "A Picture Language" 505 505))
 
+(define draw (draw-viewport vp))
+(define (clear) ((clear-viewport vp)))
+(define line (draw-line vp))
+(define (my-draw-line start end) ; convert vector to `posn`, which is how Racket receive arguments
+  (line 
+    (make-posn (xcor-vect start) (ycor-vect start))
+    (make-posn (xcor-vect end) (ycor-vect end))))
+(define make-frame make-frame-list)
+(define origin-frame frame-origin-list)
+(define edge1-frame frame-edge1-list)
+(define edge2-frame frame-edge2-list)
+(define (frame-coord-map frame)
+  (λ (v) 
+     (add-vect
+       (origin-frame frame)
+       (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
+                 (scale-vect (ycor-vect v) (edge2-frame frame))))))
 (define (segments->painter segment-list)
   (λ (frame) 
      (for-each
        (λ (segment) 
-          (draw-line
+          (my-draw-line
             ((frame-coord-map frame)
              (start-segment segment))
             ((frame-coord-map frame)
              (end-segment segment))))
        segment-list)))
+(define left-outline (make-segment (make-vect 0 0) (make-vect 0 1)))
+(define right-outline (make-segment (make-vect 0 1) (make-vect 1 1)))
+(define top-outline (make-segment (make-vect 0 0) (make-vect 1 0)))
+(define bottom-outline (make-segment (make-vect 1 0) (make-vect 1 1)))
+(define top-left-to-right-bottom (make-segment (make-vect 0 0) (make-vect 1 1)))
+(define left-bottom-to-left-top (make-segment (make-vect 0 1) (make-vect 1 0)))
+(define top-mid-to-left-mid (make-segment (make-vect 0.5 0) (make-vect 0 0.5)))
+(define top-mid-to-right-mid (make-segment (make-vect 0.5 0) (make-vect 1 0.5)))
+(define left-mid-to-bottom-mid (make-segment (make-vect 0 0.5) (make-vect 0.5 1)))
+(define right-mid-to-bottom-mid (make-segment (make-vect 1 0.5) (make-vect 0.5 1)))
+(define frame-origin-vect (make-vect 0 0))
+(define frame-edge1-vect (make-vect 500 0))
+(define frame-edge2-vect (make-vect 0 500))
+
+(define outline ((segments->painter 
+   (list 
+     left-outline
+     right-outline
+     top-outline
+     bottom-outline))
+ (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+
+(define cross ((segments->painter 
+   (list 
+     top-left-to-right-bottom
+     left-bottom-to-left-top))
+ (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+
+(define diamond ((segments->painter 
+   (list 
+     top-mid-to-left-mid
+     top-mid-to-right-mid
+     left-mid-to-bottom-mid
+     right-mid-to-bottom-mid))
+ (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+
+;outline
+;cross
+;diamond
+
+; I didn't draw wave :)
+
+
+
