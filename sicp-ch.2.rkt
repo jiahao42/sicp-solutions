@@ -902,17 +902,20 @@ vect2
 (frame-edge2-cons frame-cons)
 
 (say "Exercise 2.48") ; it's in Exercise 2.2
-;(define (segments->painter segment-list)
-  ;(λ (frame) 
-     ;(for-each
-       ;(λ (segment) 
-          ;(draw-line
-            ;((frame-coord-map frame)
-             ;(start-segment segment))
-            ;((frame-coord-map frame)
-             ;(end-segment segment))))
-       ;segment-list)))
 (define segment (make-segment vect1 vect2))
 segment
 (start-segment segment)
 (end-segment segment)
+
+(say "Exercise 2.49")
+
+(define (segments->painter segment-list)
+  (λ (frame) 
+     (for-each
+       (λ (segment) 
+          (draw-line
+            ((frame-coord-map frame)
+             (start-segment segment))
+            ((frame-coord-map frame)
+             (end-segment segment))))
+       segment-list)))
