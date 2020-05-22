@@ -901,15 +901,18 @@ segment
 (say "Exercise 2.49")
 (require graphics/graphics)
 (open-graphics)
-(define vp (open-viewport "A Picture Language" 505 505))
+(define frame-size 500)
+(define vp (open-viewport "A Picture Language" (+ frame-size 5) (+ frame-size 5)))
 
 (define draw (draw-viewport vp))
 (define (clear) ((clear-viewport vp)))
 (define line (draw-line vp))
-(define (my-draw-line start end) ; convert vector to `posn`, which is how Racket receive arguments
+(define (my-draw-line start end) ; convert vector to `posn`, which is how Racket receive arguments, also scale coordinates to the frame size
+  (let ((scaled-start (scale-vect frame-size start))
+        (scaled-end (scale-vect frame-size end)))
   (line 
-    (make-posn (xcor-vect start) (ycor-vect start))
-    (make-posn (xcor-vect end) (ycor-vect end))))
+    (make-posn (xcor-vect scaled-start) (ycor-vect scaled-start))
+    (make-posn (xcor-vect scaled-end) (ycor-vect scaled-end)))))
 (define make-frame make-frame-list)
 (define origin-frame frame-origin-list)
 (define edge1-frame frame-edge1-list)
@@ -930,45 +933,56 @@ segment
             ((frame-coord-map frame)
              (end-segment segment))))
        segment-list)))
+; for outline
 (define left-outline (make-segment (make-vect 0 0) (make-vect 0 1)))
 (define right-outline (make-segment (make-vect 0 1) (make-vect 1 1)))
 (define top-outline (make-segment (make-vect 0 0) (make-vect 1 0)))
 (define bottom-outline (make-segment (make-vect 1 0) (make-vect 1 1)))
+; for X
 (define top-left-to-right-bottom (make-segment (make-vect 0 0) (make-vect 1 1)))
 (define left-bottom-to-left-top (make-segment (make-vect 0 1) (make-vect 1 0)))
 (define top-mid-to-left-mid (make-segment (make-vect 0.5 0) (make-vect 0 0.5)))
 (define top-mid-to-right-mid (make-segment (make-vect 0.5 0) (make-vect 1 0.5)))
+; for diamond
 (define left-mid-to-bottom-mid (make-segment (make-vect 0 0.5) (make-vect 0.5 1)))
 (define right-mid-to-bottom-mid (make-segment (make-vect 1 0.5) (make-vect 0.5 1)))
-(define frame-origin-vect (make-vect 0 0))
-(define frame-edge1-vect (make-vect 500 0))
-(define frame-edge2-vect (make-vect 0 500))
+; for T
+(define vertical-line (make-segment (make-vect 0.5 0.4) (make-vect 0.5 0.6)))
+(define horizontal-line (make-segment (make-vect 0.4 0.4) (make-vect 0.6 0.4)))
 
-(define outline ((segments->painter 
+(define frame-origin-vect (make-vect 0 0))
+(define frame-edge1-vect (make-vect 1 0)) ; x
+(define frame-edge2-vect (make-vect 0 1)) ; y
+(define my-frame (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect))
+
+(define outline (segments->painter 
    (list 
      left-outline
      right-outline
      top-outline
-     bottom-outline))
- (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+     bottom-outline)))
 
-(define cross ((segments->painter 
+(define X (segments->painter 
    (list 
      top-left-to-right-bottom
-     left-bottom-to-left-top))
- (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+     left-bottom-to-left-top)))
 
-(define diamond ((segments->painter 
+(define diamond (segments->painter 
    (list 
      top-mid-to-left-mid
      top-mid-to-right-mid
      left-mid-to-bottom-mid
-     right-mid-to-bottom-mid))
- (make-frame frame-origin-vect frame-edge1-vect frame-edge2-vect)))
+     right-mid-to-bottom-mid)))
 
-;outline
-;cross
-;diamond
+(define T (segments->painter 
+   (list 
+     vertical-line
+     horizontal-line)))
+
+;(outline my-frame)
+;(X my-frame)
+;(diamond my-frame)
+;(T my-frame)
 
 ; I didn't draw wave :)
 
@@ -982,26 +996,48 @@ segment
                     new-origin
                     (sub-vect (m corner1) new-origin)
                     (sub-vect (m corner2) new-origin)))))))
-(define (flip-vert painter)
+(define (my-flip-vert painter)
   (transform-painter painter
-                     (make-vert 0.0 1.0)
-                     (make-vert 1.0 1.0)
-                     (make-vert 0.0 0.0)))
+                     (make-vect 0.0 1.0)
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 0.0)))
 (define (shrink-to-upper-right painter)
   (transform-painter
     painter 
-    (make-vert 0.5 0.5)
-    (make-vert 1.0 0.5)
-    (make-vert 0.5 1.0)))
+    (make-vect 0.5 0.5)
+    (make-vect 1.0 0.5)
+    (make-vect 0.5 0.0)))
 (define (rotate90 painter)
   (transform-painter 
-    (make-vert 1.0 0.0)
-    (make-vert 1.0 1.0)
-    (make-vert 0.0 0.0)))
+    painter
+    (make-vect 1.0 0.0)
+    (make-vect 1.0 1.0)
+    (make-vect 0.0 0.0)))
 (define (squash-inwards painter)
   (transform-painter
     painter
-    (make-vert 0.0 0.0)
-    (make-vert 0.65 0.35)
-    (make-vert 0.35 0.65)))
-(shrink-to-upper-right einstein)
+    (make-vect 0.0 0.0)
+    (make-vect 0.65 0.35)
+    (make-vect 0.35 0.65)))
+(T my-frame)
+((shrink-to-upper-right T) my-frame)
+((rotate90 T) my-frame)
+;((squash-inwards T) my-frame)
+
+(define (rotate180 painter)
+  (transform-painter
+    painter
+    (make-vect 1.0 1.0)
+    (make-vect 0.0 1.0)
+    (make-vect 1.0 0.0)))
+(define flip-horiz rotate180)
+((flip-horiz T) my-frame)
+
+(define (rotate270 painter)
+  (transform-painter
+    painter
+    (make-vect 0.0 1.0)
+    (make-vect 0.0 0.0)
+    (make-vect 1.0 1.0)))
+((rotate270 T) my-frame)
+
