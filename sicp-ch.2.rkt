@@ -1129,3 +1129,20 @@ segment
 (memq 'red '((red shoes) (blue socks))) ; #f
 (memq 'red '(red shoes blue socks)) ; '(red shoes blue socks)
 
+(say "Exercise 2.54")
+(define (recursive-eq? x y)
+  (cond ((or (pair? x) (pair? y)) ; one of them is pair
+         (cond ((and (pair? x) (pair? y)) ; both of them are pair
+                (if (eq? (car x) (car y))
+                  (recursive-eq? (cdr x) (cdr y))
+                  #f)) ; only one of them is pair
+               (else #f)))
+         ((or (null? x) (null? y))
+          (cond ((and (null? x) (null? y) #t))
+                (else #f)))
+         (else (eq? x y))))
+(recursive-eq? '(this is a list) '(this is a list))
+(recursive-eq? '(this is a list) '(this (is a) list))
+
+
+
