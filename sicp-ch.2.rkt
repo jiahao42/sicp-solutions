@@ -1149,7 +1149,7 @@ segment
 ; | 
 ; | is equivalent to
 ; V
-(caar (quote (quote abracadabra)))
+(car (quote (quote abracadabra)))
 
 
 
