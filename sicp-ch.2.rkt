@@ -1144,5 +1144,13 @@ segment
 (recursive-eq? '(this is a list) '(this is a list))
 (recursive-eq? '(this is a list) '(this (is a) list))
 
+(say "Exercise 2.55")
+(car ''abracadabra) 
+; | 
+; | is equivalent to
+; V
+(caar (quote (quote abracadabra)))
+
+
 
 
