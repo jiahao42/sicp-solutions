@@ -825,15 +825,15 @@ tree2
            (bottom (beside (bl painter) (br painter))))
        (below bottom top))))
 
-(define (flipped-pairs painter)
-  (let ((combine4 (square-of-four identity flip-vert
-                                  identity flip-vert)))
-    (combine4 painter)))
+;(define (flipped-pairs painter)
+  ;(let ((combine4 (square-of-four identity flip-vert
+                                  ;identity flip-vert)))
+    ;(combine4 painter)))
 
-(define (square-limit painter n)
-  (let ((combine4 (square-of-four flip-horiz identity
-                                  rotate180 flip-vert)))
-    (combine4 (corner-split painter n))))
+;(define (square-limit painter n)
+  ;(let ((combine4 (square-of-four flip-horiz identity
+                                  ;rotate180 flip-vert)))
+    ;(combine4 (corner-split painter n))))
 (define (split dir1 dir2)
   (define (split-internal painter n)
     (if (= n 0)
@@ -844,3 +844,33 @@ tree2
 (define general-right-split (split beside below))
 (define general-up-split (split below beside))
 
+
+(say "Exercise 2.46")
+(define (make-vect x y)
+  (cons x y))
+(define (xcor-vect vect)
+  (car vect))
+(define (ycor-vect vect)
+  (cdr vect))
+(define (add-vect vect1 vect2)
+  (make-vect (+ (xcor-vect vect1) (xcor-vect vect2)) (+ (ycor-vect vect1) (ycor-vect vect2))))
+(define (sub-vect vect1 vect2)
+  (make-vect (- (xcor-vect vect1) (xcor-vect vect2)) (- (ycor-vect vect1) (ycor-vect vect2))))
+(define (scale-vect vect factor)
+  (make-vect (* (xcor-vect vect) factor) (* (ycor-vect vect) factor)))
+(define origin-frame frame-origin)
+(define edge1-frame frame-edge1)
+(define edge2-frame frame-edge2)
+(define (frame-coord-map frame)
+  (λ (v) 
+     (add-vect
+       (origin-frame frame)
+       (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
+                 (scale-vect (ycor-vect v) (edge2-frame frame))))))
+(define vect1 (make-vect 1 2))
+(define vect2 (make-vect 3 4))
+vect1
+vect2
+(add-vect vect1 vect2)
+(sub-vect vect1 vect2)
+(scale-vect vect1 10)
