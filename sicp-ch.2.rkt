@@ -1279,7 +1279,7 @@ segment
 
 (say "Exercise 2.58")
 
-(define (Exercise-2-58)
+(define (Exercise-2-58-a)
   (define (variable? x) (symbol? x))
   (define (same-variable? v1 v2)
     (and (variable? v1) (variable? v2) (eq? v1 v2)))
@@ -1320,4 +1320,78 @@ segment
             (error "unknown expression type: DERIV" exp))))
   (deriv '(x * (x + (y * 10))) 'x)) ; answer: 2x + 10y
 
-(Exercise-2-58)
+(Exercise-2-58-a)
+
+;;; Leave it for now
+
+;(define (Exercise-2-58-b)
+  ;(define (variable? x) (symbol? x))
+  ;(define (same-variable? v1 v2)
+    ;(and (variable? v1) (variable? v2) (eq? v1 v2)))
+  ;(define (=number? exp num) (and (number? exp) (= exp num)))
+  ;; +
+  ;(define (addend s) (car s))
+  ;(define (augend s) (caddr s))
+  ;(define (sum? x) (and (pair? x) (eq? (cadr x) '+)))
+  ;(define (make-sum a1 a2) 
+    ;(cond ((=number? a1 0) a2)
+          ;((=number? a2 0) a1)
+          ;((and (number? a1) (number? a2))
+           ;(+ a1 a2))
+          ;(else (list a1 '+ a2))))
+  ;; *
+  ;(define (multiplier p) (car p))
+  ;(define (multiplicand p) (caddr p))
+  ;(define (product? x) (and (pair? x) (eq? (cadr x) '*)))
+  ;(define (make-product m1 m2) 
+    ;(cond ((or (=number? m1 0) (=number? m2 0)) 0)
+          ;((=number? m1 1) m2)
+          ;((=number? m2 1) m1)
+          ;((and (number? m1) (number? m2)) (* m1 m2))
+          ;(else (list m1 '* m2))))
+
+  ;(define (deriv exp var)
+    ;(cond ((number? exp) 0)
+          ;((variable? exp) (if (same-variable? exp var) 1 0))
+          ;((sum? exp) (make-sum (deriv (addend exp) var)
+                                ;(deriv (augend exp) var)))
+          ;((product? exp)
+           ;(make-sum
+             ;(make-product (multiplier exp)
+                           ;(deriv (multiplicand exp) var))
+             ;(make-product (deriv (multiplier exp) var)
+                           ;(multiplicand exp))))
+          ;(else 
+            ;(error "unknown expression type: DERIV" exp))))
+  ;(deriv '(x + 3 * (x + y + 2)) 'x)) ; answer: 2x + 10y
+
+;(Exercise-2-58-b)
+
+(say "Exercise 2.59")
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
+        (else (element-of-set? x (cdr set)))))
+(define (adjoin-set x set)
+  (if (element-of-set? x set)
+    set
+    (cons x set)))
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((element-of-set? (car set1) set2)
+         (cons (car set1) (intersection-set (cdr set1) set2)))
+        (else (intersection-set (cdr set1) set2))))
+(define (union-set set1 set2)
+  (cond ((null? set1) set2)
+        ((element-of-set? (car set1) set2)
+          (union-set (cdr set1) set2))
+        (else (union-set (cdr set1) (cons (car set1) set2)))))
+(define set1 (adjoin-set 1 (adjoin-set 2 (adjoin-set 3 '()))))
+(define set2 (adjoin-set 3 (adjoin-set 4 (adjoin-set 5 '()))))
+set1 
+set2
+(intersection-set set1 set2)
+(union-set set1 set2)
+
+
+
