@@ -1403,12 +1403,18 @@ set2
       (cons x set))
   (define (intersection-set set1 set2)
     (cond ((or (null? set1) (null? set2)) '())
-          ((element-of-set? (car set1) set2)
-           (cons (car set1) (intersection-set (cdr set1) set2)))
+          ((element-of-set? (car set1) set2) ; element in set1 is in set2
+           (if (element-of-set? (car set1) (cdr set1)) ; if there are still duplicates of this element in set1, skip it for now
+             (intersection-set (cdr set1) set2)
+             (cons (car set1) (intersection-set (cdr set1) set2))))
           (else (intersection-set (cdr set1) set2))))
-  (define set1 (adjoin-set 1 (adjoin-set 2 (adjoin-set 3 '()))))
-  (define set2 (adjoin-set 3 (adjoin-set 4 (adjoin-set 5 '()))))
-  set1 
-  set2
-  (intersection-set set1 set2))
+  (define (union-set set1 set2)
+    (cond ((null? set1) set2)
+          (else (union-set (cdr set1) (cons (car set1) set2)))))
+  (define set1 (adjoin-set 2 (adjoin-set 3 (adjoin-set 2 '()))))
+  (define set2 (adjoin-set 1 (adjoin-set 3 (adjoin-set 2 (adjoin-set 2 '())))))
+  (say set1)
+  (say set2)
+  (say (union-set set1 set2))
+  (say (intersection-set set1 set2)))
 (Exercise-2-60)
